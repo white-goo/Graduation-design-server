@@ -36,7 +36,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     @Override
-    public Object loadById(String id) {
+    public CourseVO loadById(String id) {
         Course course = super.getById(id);
         CourseVO courseVO = new CourseVO();
         EntityToVOMapper.getInstance().entityToVo(courseVO,course);
