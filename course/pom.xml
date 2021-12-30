@@ -6,7 +6,6 @@
         <artifactId>parent</artifactId>
         <groupId>white.goo</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

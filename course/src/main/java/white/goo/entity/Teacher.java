@@ -1,5 +1,8 @@
 package white.goo.entity;
 
+import lombok.Data;
+
+@Data
 public class Teacher extends BaseEntity {
 
     /**

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import white.goo.dto.IdVO;
 import white.goo.dto.R;
 import white.goo.service.CourseService;
 
@@ -21,8 +22,8 @@ public class CourseController {
     }
 
     @PostMapping("/load")
-    public R load(@RequestBody String id){
-        return R.ok().data(courseService.loadById(id));
+    public R load(@RequestBody IdVO id){
+        return R.ok().data(courseService.loadById(id.getId()));
     }
 
 }

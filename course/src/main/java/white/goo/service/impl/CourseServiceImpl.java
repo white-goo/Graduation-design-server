@@ -1,6 +1,7 @@
 package white.goo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,10 @@ import white.goo.entity.Teacher;
 import white.goo.repository.CourseMapper;
 import white.goo.service.CourseService;
 import white.goo.service.TeacherService;
+import white.goo.util.EntityToVOMapper;
 import white.goo.vo.CourseVO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +38,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Override
     public Object loadById(String id) {
         Course course = super.getById(id);
-        Teacher teacher = teacherService.getById(course.getTeacherId());
         CourseVO courseVO = new CourseVO();
-        BeanUtil.copyProperties(course,courseVO);
-        courseVO.setTeacher(teacher);
+        EntityToVOMapper.getInstance().entityToVo(courseVO,course);
         return courseVO;
     }
 }

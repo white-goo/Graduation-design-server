@@ -1,7 +1,10 @@
 package white.goo.dto;
 
+import lombok.Data;
+
+@Data
 public class BaseVO {
 
-    private String Id;
+    private String id;
 
 }

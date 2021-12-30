@@ -1,8 +1,10 @@
 package white.goo.entity;
 
 import lombok.Data;
+import white.goo.annotation.FK;
 import white.goo.entity.conties.CourseFormEnum;
 import white.goo.entity.conties.CourseStatusEnum;
+import white.goo.service.TeacherService;
 
 @Data
 public class Course extends BaseEntity {
@@ -15,6 +17,7 @@ public class Course extends BaseEntity {
     /**
      * 授课老师id
      */
+    @FK(value = Teacher.class,service = TeacherService.class)
     private String teacherId;
 
     /**
