@@ -9,7 +9,7 @@ public class DBUtil {
         return (IService<?>) SpringUtil.getBean(name);
     }
 
-    public static<T extends IService<?>> IService<T> getService(Class<T> type){
-        return (IService<T>) SpringUtil.getBean(type);
+    public static<T extends IService<?>> IService<?> getService(Class<T> type){
+        return (IService<?>) SpringUtil.getBean(type);
     }
 }
