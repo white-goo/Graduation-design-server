@@ -1,6 +1,7 @@
 package white.goo.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import white.goo.entity.Course;
 import white.goo.vo.CourseVO;
@@ -8,7 +9,7 @@ import white.goo.vo.CourseVO;
 import java.util.List;
 
 public interface CourseService extends IService<Course> {
-    List<CourseVO> listVO();
+    List<CourseVO> listVO(Page<Course> page);
 
     CourseVO loadById(String id);
 }

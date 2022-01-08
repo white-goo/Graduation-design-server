@@ -1,12 +1,11 @@
 package white.goo.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import white.goo.dto.IdVO;
 import white.goo.dto.R;
+import white.goo.entity.Course;
 import white.goo.service.CourseService;
 
 @RestController
@@ -17,13 +16,13 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/list")
-    public R list(){
-        return R.ok().data(courseService.listVO());
+    public R list(Page<Course> page){
+        return R.ok().put("courseList",courseService.listVO(page));
     }
 
     @PostMapping("/load")
     public R load(@RequestBody IdVO id){
-        return R.ok().data(courseService.loadById(id.getId()));
+        return R.ok().put("course",courseService.loadById(id.getId()));
     }
 
 }

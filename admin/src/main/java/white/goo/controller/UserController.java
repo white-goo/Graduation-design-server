@@ -4,19 +4,26 @@ import org.springframework.web.bind.annotation.*;
 import white.goo.dto.R;
 import white.goo.entity.User;
 
+import java.util.HashMap;
+
 @RestController
-@RequestMapping("/user")
-@CrossOrigin
+@RequestMapping("/admin/user")
 public class UserController {
 
     @PostMapping("/login")
     public R login(@RequestBody User user){
-        return R.ok().data("token","admin");
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("token", "admin");
+        return R.ok().put("data",objectObjectHashMap);
     }
 
     @GetMapping("/info")
     public R info(){
-        return R.ok().data("roles", "[admin]").data("name","admin").data("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("roles", "[admin]");
+        objectObjectHashMap.put("name", "admin");
+        objectObjectHashMap.put("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+        return R.ok().put("data",objectObjectHashMap);
     }
 
     @PostMapping("/logout")

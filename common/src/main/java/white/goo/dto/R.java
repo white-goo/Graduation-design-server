@@ -1,21 +1,21 @@
 package white.goo.dto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 同意返回值对象
+ * 统一返回值对象
  */
 public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
-    private Map<String, Object> data = new HashMap<>();
 
     public R() {
         put("code", 20000);
         put("msg", "success");
-        super.put("data", data);
     }
 
     public static R error() {
@@ -41,7 +41,7 @@ public class R extends HashMap<String, Object> {
 
     public static R ok(Map<String, Object> map) {
         R r = new R();
-        r.data.putAll(map);
+        r.putAll(map);
         return r;
     }
 
@@ -49,13 +49,24 @@ public class R extends HashMap<String, Object> {
         return new R();
     }
 
-    public R data(String key, Object value){
-        data.put(key, value);
+    public R put(String key, Object value) {
+        super.put(key, value);
         return this;
     }
 
-    public R data(Object value){
-        data.put("data", value);
+    public Integer getCode(){
+        return (Integer) this.get("code");
+    }
+
+    public R saveData(Object data){
+        put("data",data);
         return this;
     }
+    public<T> T getData(TypeReference<T> typeReference){
+        Object data = get("data");
+        String s = JSON.toJSONString(data);
+        T t = JSON.parseObject(s, typeReference);
+        return t;
+    }
+
 }

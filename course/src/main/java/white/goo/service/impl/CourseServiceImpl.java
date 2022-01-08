@@ -1,7 +1,7 @@
 package white.goo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,6 @@ import white.goo.service.TeacherService;
 import white.goo.util.EntityToVOMapper;
 import white.goo.vo.CourseVO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +23,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private TeacherService teacherService;
 
     @Override
-    public List<CourseVO> listVO() {
-        List<Course> list = super.list();
-        return list.stream().map(item -> {
+    public List<CourseVO> listVO(Page<Course> page) {
+        return super.page(page).getRecords().stream().map(item -> {
             CourseVO courseVO = new CourseVO();
             BeanUtil.copyProperties(item, courseVO);
             Teacher byId = teacherService.getById(item.getTeacherId());

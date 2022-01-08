@@ -6,6 +6,8 @@ import white.goo.entity.Teacher;
 import white.goo.entity.conties.CourseFormEnum;
 import white.goo.entity.conties.CourseStatusEnum;
 
+import java.util.Date;
+
 @Data
 public class CourseVO extends BaseVO {
 
@@ -38,5 +40,10 @@ public class CourseVO extends BaseVO {
      * 上课形式
      */
     private CourseFormEnum form;
+
+    /**
+     * 开课时间
+     */
+    private Date date;
 
 }
