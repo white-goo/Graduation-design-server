@@ -1,5 +1,6 @@
 package white.goo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import white.goo.annotation.FK;
 import white.goo.entity.conties.CourseFormEnum;
@@ -45,6 +46,7 @@ public class Course extends BaseEntity {
     /**
      * 开课时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     private Date date;
 
 }

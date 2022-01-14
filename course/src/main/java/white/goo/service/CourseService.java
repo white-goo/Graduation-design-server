@@ -3,6 +3,7 @@ package white.goo.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import white.goo.dto.IdVO;
 import white.goo.entity.Course;
 import white.goo.vo.CourseVO;
 
@@ -12,4 +13,12 @@ public interface CourseService extends IService<Course> {
     List<CourseVO> listVO(Page<Course> page);
 
     CourseVO loadById(String id);
+
+    boolean save(CourseVO courseVO);
+
+    Boolean update(CourseVO courseVO);
+
+    int delete(IdVO idVO);
+
+    int deleteBatch(List<IdVO> idVOList);
 }
