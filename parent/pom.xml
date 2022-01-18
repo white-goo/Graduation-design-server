@@ -8,6 +8,7 @@
         <module>../admin</module>
         <module>../course</module>
         <module>../gateway</module>
+        <module>../auth</module>
     </modules>
     <groupId>white.goo</groupId>
     <artifactId>parent</artifactId>
@@ -72,6 +73,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-spring-boot-starter</artifactId>
+                <version>1.7.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>3.4.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -87,6 +98,14 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

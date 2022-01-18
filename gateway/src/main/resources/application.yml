@@ -16,5 +16,10 @@ spring:
           uri: lb://course
           predicates:
             - Path=/course/**
+  datasource:
+    password: 716627
+    username: root
+    url: jdbc:mysql:///graduationdesign?autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 8082
