@@ -1,11 +1,30 @@
 package white.goo.entity;
 
-import lombok.Data;
-import org.springframework.stereotype.Component;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Getter;
+import lombok.Setter;
+import white.goo.util.IDGenerator;
 
-@Data
-public class BaseEntity {
+import java.io.Serializable;
+import java.util.Date;
 
-    private String id;
+@Getter
+@Setter
+public class BaseEntity implements Serializable {
+
+    @TableId
+    private Long id;
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date editTime;
+    private Long creator;
+    private Long editor;
+
+    public BaseEntity(){
+        setId(IDGenerator.generatorID());
+    }
 
 }

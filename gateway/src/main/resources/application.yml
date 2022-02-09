@@ -7,19 +7,14 @@ spring:
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
-        - id: admin_rote
-          uri: lb://admin
+        - id: auth_rote
+          uri: lb://auth
           predicates:
-            - Path=/admin/**
+            - Path=/auth/**
 
         - id: course_rote
           uri: lb://course
           predicates:
             - Path=/course/**
-  datasource:
-    password: 716627
-    username: root
-    url: jdbc:mysql:///graduationdesign?autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
-    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 8082

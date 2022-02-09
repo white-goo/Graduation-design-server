@@ -2,6 +2,8 @@ package white.goo.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import white.goo.annotation.FK;
 import white.goo.entity.conties.CourseFormEnum;
 import white.goo.entity.conties.CourseStatusEnum;
@@ -9,7 +11,8 @@ import white.goo.service.TeacherService;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 public class Course extends BaseEntity {
 
     /**

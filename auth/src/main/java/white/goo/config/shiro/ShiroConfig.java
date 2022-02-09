@@ -54,8 +54,8 @@ public class ShiroConfig {
          */
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 
-        filterChainDefinitionMap.put("/register", "anon");
-        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/auth/user/register", "anon");
+        filterChainDefinitionMap.put("/auth/user/login", "anon");
         //静态资源一定要记得配置,不然会被shiro拦截
         filterChainDefinitionMap.put("/js/**/*", "anon");
         filterChainDefinitionMap.put("/css/**/*", "anon");
@@ -73,11 +73,11 @@ public class ShiroConfig {
          * JwtFilter里返回false后重定向的路径就是这个,
          * 这是一个登录页的路径
          */
-        shiroFilterFactoryBean.setLoginUrl("/");
+        shiroFilterFactoryBean.setLoginUrl("/auth/user/login");
         /**
          * 设置未经授权的路径
          */
-        shiroFilterFactoryBean.setUnauthorizedUrl("/");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/auth/user/login");
 
         /**
          * 设置自定义过滤器

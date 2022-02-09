@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="white.goo.repository.TeacherMapper">
-    <resultMap id="course" type="white.goo.entity.Teacher">
+<mapper namespace="white.goo.repository.AuthMapper">
+    <resultMap id="auth" type="white.goo.entity.Auth">
         <id column="id" property="id"/>
-        <result column="name" property="name"/>
+        <result column="auth_name" property="authName"/>
+        <result column="auth_show_name" property="authShowName"/>
         <result column="create_time" property="createTime"/>
         <result column="edit_time" property="editTime"/>
         <result column="creator" property="creator"/>
         <result column="editor" property="editor"/>
+        <result column="module_name" property="moduleName"/>
     </resultMap>
 </mapper>

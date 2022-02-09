@@ -9,5 +9,9 @@
         <result column="credit" property="credit"/>
         <result column="place" property="place"/>
         <result column="form" property="form"/>
+        <result column="create_time" property="createTime"/>
+        <result column="edit_time" property="editTime"/>
+        <result column="creator" property="creator"/>
+        <result column="editor" property="editor"/>
     </resultMap>
 </mapper>

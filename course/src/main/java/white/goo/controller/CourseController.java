@@ -2,6 +2,8 @@ package white.goo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import white.goo.annonation.Permission;
+import white.goo.annonation.ValidatePermission;
 import white.goo.dto.IdVO;
 import white.goo.dto.Query;
 import white.goo.dto.R;
@@ -19,6 +21,7 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/list")
+    @ValidatePermission("admin")
     public R list(@RequestBody Query<Course> page){
         return R.ok().put("courseList",courseService.listVO(page));
     }

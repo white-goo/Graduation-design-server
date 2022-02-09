@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.UUID;
 
 public class JwtUtil {
-    private static final long EXPIRE_TIME = 60 * 60 * 1000;
-    private static final String SING = "OPEN_CRM";
+    private static final long EXPIRE_TIME = 30 * 60 * 1000;
+    private static final String SING = "White-goo";
 
     /**
      * 校验token是否正确
@@ -24,7 +24,8 @@ public class JwtUtil {
         //根据密码生成JWT效验器
         Algorithm algorithm = Algorithm.HMAC256(SING);
         JWTVerifier verifier = JWT.require(algorithm)
-                .withClaim("username", JwtUtil.getUsername(token))
+                .withClaim("userId", JwtUtil.getUserId(token))
+                .withClaim("permission", JwtUtil.getPermission(token))
                 .build();
         //效验TOKEN
         try {
@@ -35,15 +36,10 @@ public class JwtUtil {
         }
     }
 
-    /**
-     * 获得token中的信息无需secret解密也能获得
-     *
-     * @return token中包含的用户名
-     */
-    public static String getUsername(String token) {
+    public static String getPermission(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("username").asString();
+            return jwt.getClaim("permission").asString();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -54,10 +50,10 @@ public class JwtUtil {
      *
      * @return token中包含的用户名
      */
-    public static Integer getUserId(String token) {
+    public static Long getUserId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("userId").asInt();
+            return jwt.getClaim("userId").asLong();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -109,17 +105,20 @@ public class JwtUtil {
     /**
      * 生成签名
      *
-     * @param username 用户名
+     *
+     * @param userId 用户id
+     * @Param permission 权限
      * @return 加密的token
      */
-    public static String sign(String username) {
+    public static String sign(Long userId, String permission) {
         Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
         Algorithm algorithm = Algorithm.HMAC256(SING);
         String jwtId = UUID.randomUUID().toString();
         // 附带username信息
         return JWT.create()
                 .withJWTId(jwtId)
-                .withClaim("username", username)
+                .withClaim("userId", userId)
+                .withClaim("permission", permission)
                 .withExpiresAt(date)
                 .withIssuedAt(new Date())
                 .sign(algorithm);

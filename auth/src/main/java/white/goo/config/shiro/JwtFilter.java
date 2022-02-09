@@ -1,5 +1,6 @@
 package white.goo.config.shiro;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 
