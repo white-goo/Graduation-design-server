@@ -22,9 +22,6 @@ import java.util.Objects;
 @Component
 public class InitPermission implements ApplicationRunner {
 
-    @Value("${spring.application.name}")
-    private String moduleName;
-
     @Autowired
     private AuthService authService;
 
@@ -33,7 +30,7 @@ public class InitPermission implements ApplicationRunner {
     public void run(ApplicationArguments args){
 
         Map<String, Object> beansWithAnnotation = SpringUtil.getApplicationContext().getBeansWithAnnotation(RoleAuth.class);
-        List<Auth> auths = authService.list(new QueryWrapper<Auth>().eq("module_name", moduleName));
+        List<Auth> auths = authService.list();
         beansWithAnnotation.forEach((k, v) -> {
             auths.stream().filter(item->{
                 for (Field declaredField : v.getClass().getDeclaredFields()) {
@@ -55,12 +52,11 @@ public class InitPermission implements ApplicationRunner {
                 if(Objects.nonNull(permission)){
                     try {
                         String permissionValue = (String) declaredField.get(v);
-                        Auth one = authService.getOne(new QueryWrapper<Auth>().eq("module_name", moduleName).eq("auth_name", permission.value()));
+                        Auth one = authService.getOne(new QueryWrapper<Auth>().eq("auth_name", permission.value()));
                         if(Objects.isNull(one)){
                             Auth auth = new Auth();
                             auth.setAuthName(permissionValue);
                             auth.setAuthShowName(permission.value());
-                            auth.setModuleName(moduleName);
                             authService.save(auth);
                         }else {
                             one.setAuthName(permissionValue);

@@ -6,10 +6,9 @@ import white.goo.dto.BaseVO;
 
 @Getter
 @Setter
-public class AuthVo extends BaseVO {
+public class AuthVO extends BaseVO {
 
     private String authName;
     private String authShowName;
-    private String moduleName;
 
 }
