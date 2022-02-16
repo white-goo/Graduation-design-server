@@ -1,13 +1,15 @@
 package white.goo.config.shiro;
 
-import com.google.common.base.Strings;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
+import white.goo.util.SpringUtil;
+import white.goo.core.SecurityManager;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 public class JwtFilter extends FormAuthenticationFilter {
 
@@ -25,8 +27,9 @@ public class JwtFilter extends FormAuthenticationFilter {
                         //如果有token就进行Jwt验证,这个login方法最终会进到我们自定义的ModularRealmAuthenticator类中,最终会进到我们的JwtRealm中的验证方法
                         getSubject(request,response).login(new JwtToken(cookie.getValue()));
                         //如果JwtRealm中的验证一切正常,就返回true,反之,就捕获我们在JwtRealm里面的验证方法里面抛出的异常
-                        return true;
-                    } catch (AuthenticationException e) {
+                        SecurityManager securityManager = (SecurityManager)SpringUtil.getBean("securityManager");
+                        return securityManager.doValidate();
+                    } catch (AuthenticationException | IOException e) {
                         return false;
                     }
                 }

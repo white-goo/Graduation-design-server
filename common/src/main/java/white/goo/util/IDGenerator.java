@@ -5,8 +5,8 @@ import com.baidu.fsg.uid.impl.CachedUidGenerator;
 
 public class IDGenerator {
 
-    public static long generatorID(){
-        return ((CachedUidGenerator)SpringUtil.getBean("cachedUidGenerator")).getUID();
+    public static String generatorID(){
+        return String.valueOf(((CachedUidGenerator) SpringUtil.getBean("cachedUidGenerator")).getUID());
     }
 
 }

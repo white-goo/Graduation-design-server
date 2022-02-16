@@ -51,7 +51,7 @@ public class JwtRealm extends AuthorizingRealm {
         }
 
         //从token里获取用户名
-        Long userId = JwtUtil.getUserId(token);
+        String userId = JwtUtil.getUserId(token);
 
         //这里应该根据用户名从数据库查询出User,此处为了方便直接new
         User user = userService.getOne(new QueryWrapper<User>().eq("id", userId));

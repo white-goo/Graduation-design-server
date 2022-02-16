@@ -1,9 +1,11 @@
 package white.goo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import white.goo.annonation.Permission;
-import white.goo.annonation.ValidatePermission;
+import white.goo.annonation.*;
+import white.goo.constant.CourseRole;
+import white.goo.constant.Operator;
 import white.goo.dto.IdVO;
 import white.goo.dto.Query;
 import white.goo.dto.R;
@@ -21,43 +23,77 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/list")
-    @ValidatePermission("admin")
-    public R list(@RequestBody Query<Course> page){
-        return R.ok().put("courseList",courseService.listVO(page));
+    public R list(@RequestBody Query<Course> page) {
+        return R.ok().put("courseList", courseService.listVO(page));
     }
 
     @PostMapping("/load")
-    public R load(@RequestBody IdVO id){
-        return R.ok().put("course",courseService.loadById(id.getId()));
+    public R load(@RequestBody IdVO id) {
+        return R.ok().put("course", courseService.loadById(id.getId()));
     }
 
     @PostMapping("/save")
-    public R save(@RequestBody CourseVO courseVO){
+    @AuthValidators(opt = Operator.OR, value = {
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam("admin")
+            }),
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_SYS_ADMIN)
+            }),
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_TEACHER)
+            })
+    })
+    public R save(@RequestBody CourseVO courseVO) {
         boolean save = courseService.save(courseVO);
-        if(save){
+        if (save) {
             return R.ok();
-        }else {
+        } else {
             return R.error("保存失败");
         }
     }
 
     @PostMapping("/update")
-    public R update(@RequestBody CourseVO courseVO){
+    @AuthValidators(opt = Operator.OR, value = {
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_SYS_ADMIN)
+            }),
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_TEACHER)
+            })
+    })
+    public R update(@RequestBody CourseVO courseVO) {
         Boolean update = courseService.update(courseVO);
-        if(update){
+        if (update) {
             return R.ok();
-        }else {
+        } else {
             return R.error();
         }
     }
 
     @PostMapping("/delete")
-    public R delete(@RequestBody IdVO idVO){
+    @AuthValidators(opt = Operator.OR, value = {
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_SYS_ADMIN)
+            }),
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_TEACHER)
+            })
+    })
+    public R delete(@RequestBody IdVO idVO) {
         courseService.delete(idVO);
         return R.ok();
     }
 
     @PostMapping("/deleteBatch")
+    @AuthValidators(opt = Operator.OR, value = {
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_SYS_ADMIN)
+            }),
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_TEACHER)
+            })
+    })
     public R deleteBatch(@RequestBody List<IdVO> idVOList) {
         courseService.deleteBatch(idVOList);
         return R.ok();

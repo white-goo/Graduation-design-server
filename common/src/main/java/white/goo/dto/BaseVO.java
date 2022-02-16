@@ -3,17 +3,18 @@ package white.goo.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
-public class BaseVO {
+public class BaseVO implements Serializable {
 
-    private Long id;
+    private String id;
     private Date createTime;
     private Date editTime;
-    private Long creator;
-    private Long editor;
+    private String creator;
+    private String editor;
 
 
 }

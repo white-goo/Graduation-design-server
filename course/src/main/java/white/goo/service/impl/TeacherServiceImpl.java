@@ -19,7 +19,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     }
 
     @Override
-    public int deleteBatch(List<String> teacherIds) {
+    public int deleteBatch(List<Long> teacherIds) {
         return baseMapper.deleteBatchIds(teacherIds);
     }
 }

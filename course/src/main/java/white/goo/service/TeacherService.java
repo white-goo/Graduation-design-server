@@ -9,5 +9,5 @@ import java.util.List;
 public interface TeacherService extends IService<Teacher> {
     int delete(IdVO of);
 
-    int deleteBatch(List<String> teacherIds);
+    int deleteBatch(List<Long> teacherIds);
 }

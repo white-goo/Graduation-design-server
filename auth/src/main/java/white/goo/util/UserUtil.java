@@ -3,21 +3,21 @@ package white.goo.util;
 import org.apache.shiro.SecurityUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
-import white.goo.vo.UserVo;
+import white.goo.vo.UserVO;
 
 public class UserUtil {
 
-    public static UserVo getUserInfo(Long userId){
+    public static UserVO getUserInfo(String userId){
         RedissonClient redissonClient = (RedissonClient) SpringUtil.getBean(RedissonClient.class);
         RBucket<Object> bucket = redissonClient.getBucket("user:" + userId);
-        return (UserVo) bucket.get();
+        return (UserVO) bucket.get();
     }
 
-    public static UserVo getCurrentUser(){
+    public static UserVO getCurrentUser(){
         RedissonClient redissonClient = (RedissonClient) SpringUtil.getBean(RedissonClient.class);
         String token = (String) SecurityUtils.getSubject().getPrincipal();
-        Long userId = JwtUtil.getUserId(token);
-        return (UserVo) redissonClient.getBucket("user:" + userId).get();
+        String userId = JwtUtil.getUserId(token);
+        return (UserVO) redissonClient.getBucket("user:" + userId).get();
     }
 
 }

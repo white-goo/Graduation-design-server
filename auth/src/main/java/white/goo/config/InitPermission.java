@@ -22,7 +22,7 @@ import java.util.Objects;
 @Component
 public class InitPermission implements ApplicationRunner {
 
-    @Value("${sys-module-name}")
+    @Value("${spring.application.name}")
     private String moduleName;
 
     @Autowired

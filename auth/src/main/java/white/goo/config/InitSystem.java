@@ -22,10 +22,10 @@ public class InitSystem implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-        User id = userService.getOne(new QueryWrapper<User>().eq("id", 1));
+        User id = userService.getOne(new QueryWrapper<User>().eq("id", "1"));
         if(Objects.isNull(id)){
             id = new User();
-            id.setId(1L);
+            id.setId("1");
             id.setPassword("admin");
             id.setUsername("admin");
             List<String> list = Arrays.asList("admin");

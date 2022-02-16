@@ -1,5 +1,7 @@
 package white.goo.config.shiro;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
@@ -10,6 +12,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import white.goo.entity.User;
 import white.goo.serivce.UserService;
+import white.goo.vo.UserVO;
 
 @Slf4j
 public class PassWordRealm extends AuthorizingRealm {
@@ -43,6 +46,9 @@ public class PassWordRealm extends AuthorizingRealm {
         if(user == null){
             throw new AuthenticationException("用户名错误");
         }
-        return new SimpleAuthenticationInfo(user,user.getPassword().toCharArray(),getName());
+        UserVO userVo = new UserVO();
+        BeanUtil.copyProperties(user,userVo);
+        userVo.setPermission(JSON.parseArray(user.getPermission(), String.class));
+        return new SimpleAuthenticationInfo(userVo,user.getPassword().toCharArray(),getName());
     }
 }

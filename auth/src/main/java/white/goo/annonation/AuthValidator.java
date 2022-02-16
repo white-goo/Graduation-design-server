@@ -1,8 +1,5 @@
 package white.goo.annonation;
 
-import white.goo.constant.Operator;
-
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,11 +7,18 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidatePermission {
+public @interface AuthValidator {
 
-    @NotNull
-    String[] value();
+    /**
+     * 校验器id
+     * @return
+     */
+    String value() default "";
 
-    Operator operator() default Operator.AND;
+    /**
+     * 校验器参数
+     * @return
+     */
+    ValidateParam[] param() default {};
 
 }

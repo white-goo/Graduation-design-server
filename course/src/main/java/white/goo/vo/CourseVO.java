@@ -27,7 +27,6 @@ public class CourseVO extends BaseVO {
     /**
      * 课程状态
      */
-    @NotNull
     private CourseStatusEnum status;
 
     /**

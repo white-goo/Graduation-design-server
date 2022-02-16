@@ -50,10 +50,10 @@ public class JwtUtil {
      *
      * @return token中包含的用户名
      */
-    public static Long getUserId(String token) {
+    public static String getUserId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("userId").asLong();
+            return jwt.getClaim("userId").asString();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -110,7 +110,7 @@ public class JwtUtil {
      * @Param permission 权限
      * @return 加密的token
      */
-    public static String sign(Long userId, String permission) {
+    public static String sign(String userId, String permission) {
         Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
         Algorithm algorithm = Algorithm.HMAC256(SING);
         String jwtId = UUID.randomUUID().toString();

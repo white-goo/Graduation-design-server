@@ -8,5 +8,4 @@ import java.util.List;
 import java.util.Map;
 
 public interface AuthService extends IService<Auth> {
-    List<Map<String, Object>> getAuthRoleInfo();
 }

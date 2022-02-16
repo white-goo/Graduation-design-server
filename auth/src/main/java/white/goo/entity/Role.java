@@ -9,5 +9,6 @@ public class Role extends BaseEntity {
 
     private String roleName;
     private String authId;
+    private String userId;
 
 }

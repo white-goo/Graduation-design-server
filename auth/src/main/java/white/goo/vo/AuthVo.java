@@ -10,5 +10,6 @@ public class AuthVo extends BaseVO {
 
     private String authName;
     private String authShowName;
+    private String moduleName;
 
 }

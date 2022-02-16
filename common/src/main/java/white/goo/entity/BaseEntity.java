@@ -15,7 +15,7 @@ import java.util.Date;
 public class BaseEntity implements Serializable {
 
     @TableId
-    private Long id;
+    private String id;
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
