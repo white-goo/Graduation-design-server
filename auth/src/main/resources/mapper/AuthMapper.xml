@@ -9,6 +9,5 @@
         <result column="edit_time" property="editTime"/>
         <result column="creator" property="creator"/>
         <result column="editor" property="editor"/>
-        <result column="module_name" property="moduleName"/>
     </resultMap>
 </mapper>
