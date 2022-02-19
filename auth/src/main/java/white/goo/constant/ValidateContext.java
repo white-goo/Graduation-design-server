@@ -2,6 +2,7 @@ package white.goo.constant;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +13,8 @@ public class ValidateContext {
 
     private Operator opt;
 
-    public ValidateContext(List<Map<String, List<String[]>>> param, Operator opt) {
-        this.param = param;
+    public ValidateContext(Operator opt) {
+        this.param = new ArrayList<>();
         this.opt = opt;
     }
 }

@@ -3,11 +3,11 @@ package white.goo.filter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.shiro.SecurityUtils;
 import white.goo.annonation.ValidatorDefine;
 import white.goo.constant.ValidateContext;
 import white.goo.serivce.IValidator;
 import white.goo.util.JwtUtil;
+import white.goo.util.ThreadLocalUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RoleValidator implements IValidator {
 
     @Override
-    public boolean doValidate(ValidateContext ctx, JSONObject requestParam, Map<String, List<String[]>> param) {
+    public boolean doValidate(ValidateContext ctx, Map<String,Object> requestParam, Map<String, List<String[]>> param) {
 
         List<String[]> permissions = param.get("");
 
-        String token = (String) SecurityUtils.getSubject().getPrincipal();
+        String token = ThreadLocalUtil.get();
         JSONArray objects = JSON.parseArray(JwtUtil.getPermission(token));
         AtomicBoolean b = new AtomicBoolean(true);
         permissions.stream().map(item->item[0]).forEach(item->{

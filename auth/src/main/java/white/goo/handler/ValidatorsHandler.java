@@ -7,32 +7,32 @@ import white.goo.serivce.IHandler;
 import white.goo.serivce.IValidator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ValidateHandler implements IHandler {
+public class ValidatorsHandler implements IHandler {
 
     private final ValidateContext context;
+
+    private final LinkedList<IValidator> chain;
 
     public ValidateContext getContext() {
         return context;
     }
 
-    private final LinkedList<IValidator> chain;
 
-    private ValidateHandler(ValidateContext context) {
+    private ValidatorsHandler(ValidateContext context) {
         this.context = context;
         this.chain = new LinkedList<>();
     }
 
-    public static ValidateHandler build(Operator opt) {
-        ValidateContext validateContext = new ValidateContext(new ArrayList<>(), opt);
-        return new ValidateHandler(validateContext);
+    public static ValidatorsHandler build(Operator opt) {
+        ValidateContext validateContext = new ValidateContext(opt);
+        return new ValidatorsHandler(validateContext);
     }
 
     @Override
-    public boolean doValidate(JSONObject requestParameter) {
+    public boolean doValidate(Map<String,Object> requestParameter) {
 
         Operator opt = context.getOpt();
         for (int i = 0; i < chain.size(); i++) {
@@ -46,7 +46,7 @@ public class ValidateHandler implements IHandler {
         return Operator.AND == opt;
     }
 
-    public ValidateHandler add(IValidator iValidator) {
+    public ValidatorsHandler addValidator(IValidator iValidator) {
         chain.add(iValidator);
         return this;
     }

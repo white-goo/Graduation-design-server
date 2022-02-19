@@ -1,23 +1,22 @@
 package white.goo.util;
 
-import org.apache.shiro.SecurityUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
-import white.goo.vo.UserVO;
+import white.goo.entity.User;
 
 public class UserUtil {
 
-    public static UserVO getUserInfo(String userId){
+    public static User getUserInfo(String userId){
         RedissonClient redissonClient = (RedissonClient) SpringUtil.getBean(RedissonClient.class);
         RBucket<Object> bucket = redissonClient.getBucket("user:" + userId);
-        return (UserVO) bucket.get();
+        return (User) bucket.get();
     }
 
-    public static UserVO getCurrentUser(){
+    public static User getCurrentUser(){
         RedissonClient redissonClient = (RedissonClient) SpringUtil.getBean(RedissonClient.class);
-        String token = (String) SecurityUtils.getSubject().getPrincipal();
+        String token = ThreadLocalUtil.get();
         String userId = JwtUtil.getUserId(token);
-        return (UserVO) redissonClient.getBucket("user:" + userId).get();
+        return (User) redissonClient.getBucket("user:" + userId).get();
     }
 
 }

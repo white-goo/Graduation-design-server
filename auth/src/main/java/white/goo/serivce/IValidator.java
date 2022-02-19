@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface IValidator {
 
-    boolean doValidate(ValidateContext ctx, JSONObject requestParam, Map<String, List<String[]>> param);
+    boolean doValidate(ValidateContext ctx, Map<String,Object> requestParam, Map<String, List<String[]>> param);
 
 }
