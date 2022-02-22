@@ -28,16 +28,6 @@ public class CourseController {
     }
 
     @PostMapping("/load")
-    @CompositeValidators(opt = Operator.OR, value = {
-            @AuthValidators(opt = Operator.OR, value = {
-                    @AuthValidator(value = "roleValidator", param = {
-                            @ValidateParam(CourseRole.COURSE_TEACHER)
-                    })
-            }),
-            @AuthValidators(opt = Operator.OR, value = {
-                    @AuthValidator(value = "test")
-            })
-    })
     public R load(@RequestBody IdVO id) {
         return R.ok().put("course", courseService.loadById(id.getId()));
     }

@@ -54,6 +54,14 @@ public class RoleController {
         return R.ok();
     }
 
+    @AuthValidators(opt = Operator.OR,value = {
+            @AuthValidator(value = "roleValidator",param = {
+                    @ValidateParam(AuthRoleConstant.AUTH_ADMIN)
+            }),
+            @AuthValidator(value = "roleValidator",param = {
+                    @ValidateParam(AuthRoleConstant.AUTH_ROLE_ADMIN)
+            })
+    })
     @PostMapping("update")
     public R update(@RequestBody RoleVO roleVO){
         roleService.update(roleVO);

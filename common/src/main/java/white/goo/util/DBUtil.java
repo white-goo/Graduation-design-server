@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import white.goo.dto.Query;
 
+import java.util.Objects;
+
 public class DBUtil {
 
 
@@ -18,7 +20,7 @@ public class DBUtil {
 
     public static<E> QueryWrapper<E> buildCondition(Query<E> query){
         QueryWrapper<E> queryWrapper = new QueryWrapper<>();
-        if(CollectionUtil.isEmpty(query.getConditions())){
+        if(Objects.isNull(query) || CollectionUtil.isEmpty(query.getConditions())){
             return queryWrapper;
         }
         query.getConditions().forEach(queryWrapper::like);

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @ValidatorDefine("roleValidator")
-public class RoleValidator implements IValidator {
+public class RoleValidator implements IValidator<Map<String, Object>> {
 
     @Override
     public boolean doValidate(ValidateContext ctx, Map<String,Object> requestParam, Map<String, List<String[]>> param) {

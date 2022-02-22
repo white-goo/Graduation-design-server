@@ -9,9 +9,14 @@ import white.goo.constant.AuthRoleConstant;
 import white.goo.constant.Operator;
 import white.goo.dto.R;
 import white.goo.serivce.AuthService;
+import white.goo.util.SecurityUtil;
+import white.goo.util.SpringUtil;
+import white.goo.vo.AuthCheckVO;
+import white.goo.core.SecurityManager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,6 +39,13 @@ public class AuthController {
     })
     public R list(){
         return R.ok().saveData(authService.list());
+    }
+
+    @PostMapping("/authCheck")
+    public R authCheck(@RequestBody List<AuthCheckVO> list){
+        SecurityManager securityManager = SecurityUtil.getSecurityManager();
+        Map<String, Boolean> collect = list.stream().collect(Collectors.toMap(AuthCheckVO::getKey, securityManager::authCheck));
+        return R.ok().saveData(collect);
     }
 
 }

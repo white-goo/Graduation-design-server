@@ -1,16 +1,14 @@
 package white.goo.handler;
 
-import com.alibaba.fastjson.JSONObject;
 import white.goo.constant.Operator;
 import white.goo.constant.ValidateContext;
 import white.goo.serivce.IHandler;
 import white.goo.serivce.IValidator;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ValidatorsHandler implements IHandler {
+public class ValidatorsHandler implements IHandler<Map<String,Object>> {
 
     private final ValidateContext context;
 

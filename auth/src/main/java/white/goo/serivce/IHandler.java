@@ -1,9 +1,6 @@
 package white.goo.serivce;
 
-import com.alibaba.fastjson.JSONObject;
 
-import java.util.Map;
-
-public interface IHandler {
-    boolean doValidate(Map<String,Object> requestParameter);
+public interface IHandler<T> {
+    boolean doValidate(T requestParameter);
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @ValidatorDefine("jwt")
-public class JwtValidator implements IValidator {
+public class JwtValidator implements IValidator<Map<String, Object>> {
 
     @Override
     public boolean doValidate(ValidateContext ctx, Map<String,Object> requestParam, Map<String, List<String[]>> param) {
@@ -25,7 +25,7 @@ public class JwtValidator implements IValidator {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if(cookie.getName().contains("Token")){
+                if(cookie.getName().equals("Token")){
                     String token = cookie.getValue();
                     if (JwtUtil.verify(token)) {
                         ThreadLocalUtil.set(token);

@@ -8,13 +8,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import white.goo.annonation.*;
 import white.goo.config.RepeatedlyReadRequestWrapper;
 import white.goo.constant.Operator;
-import white.goo.entity.User;
 import white.goo.handler.CompositeValidatorsHandler;
 import white.goo.handler.ValidatorsHandler;
 import white.goo.serivce.IHandler;
 import white.goo.serivce.IValidator;
 import white.goo.util.SpringUtil;
 import white.goo.util.UserUtil;
+import white.goo.vo.AuthCheckVO;
 import white.goo.vo.UserVO;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class SecurityManager {
 
-    private final Map<String, IHandler> handlerMap;
+    private final Map<String, IHandler<?>> handlerMap;
 
     private final List<String> nonValidateURI;
 
@@ -40,21 +40,21 @@ public class SecurityManager {
         BufferedReader reader = requestWrapper.getReader();
         String requestURI = request.getRequestURI();
         String collect = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject requestParam = JSON.parseObject(collect);
+        Object parse = JSON.parse(collect);
         boolean contains = nonValidateURI.contains(requestURI);
         if (!contains) {
             IValidator jwt = (IValidator) SpringUtil.getBean("jwt");
-            boolean b = jwt.doValidate(null, null, null);
-            if(b){
-                //判断是系统内置用户超管用户,直接放行,判断机制待完善
-                UserVO currentUser = UserUtil.getCurrentUser();
-                if ("1".equals(currentUser.getId())) {
-                    return true;
-                }
-                IHandler iHandler = handlerMap.get(requestURI);
-                if (Objects.nonNull(iHandler)) {
-                    return iHandler.doValidate(requestParam);
-                }
+            if (!jwt.doValidate(null, null, null)) {
+                return false;
+            }
+            //判断是系统内置用户超管用户,直接放行,判断机制待完善
+            UserVO currentUser = UserUtil.getCurrentUser();
+            if ("1".equals(currentUser.getId())) {
+                return true;
+            }
+            IHandler iHandler = handlerMap.get(requestURI);
+            if (Objects.nonNull(iHandler)) {
+                return iHandler.doValidate(parse);
             }
         }
         return true;
@@ -73,14 +73,14 @@ public class SecurityManager {
                 nonValidateURI.add(uri);
             } else {
                 CompositeValidators compositeValidators = v.getMethod().getAnnotation(CompositeValidators.class);
-                if(Objects.nonNull(compositeValidators)){
+                if (Objects.nonNull(compositeValidators)) {
                     CompositeValidatorsHandler compositeValidatorsHandler = CompositeValidatorsHandler.build(compositeValidators.opt());
                     for (AuthValidators authValidators : compositeValidators.value()) {
                         ValidatorsHandler handler = parseAuthValidators(authValidators);
                         compositeValidatorsHandler.addHandler(handler);
                     }
                     handlerMap.put(uri, compositeValidatorsHandler);
-                }else {
+                } else {
                     AuthValidators authValidators = v.getMethod().getAnnotation(AuthValidators.class);
                     if (Objects.nonNull(authValidators)) {
                         ValidatorsHandler handler = parseAuthValidators(authValidators);
@@ -120,5 +120,21 @@ public class SecurityManager {
             paramMap.putIfAbsent(validateParam.name(), params);
         }
         handler.getContext().getParam().add(paramMap);
+    }
+
+    public boolean authCheck(AuthCheckVO authCheckVO) {
+        String path = authCheckVO.getPath();
+        UserVO currentUser = UserUtil.getCurrentUser();
+        boolean contains = nonValidateURI.contains(path);
+        if (!contains) {
+            if ("1".equals(currentUser.getId())) {
+                return true;
+            }
+            IHandler iHandler = handlerMap.get(path);
+            if (Objects.nonNull(iHandler)) {
+                return iHandler.doValidate(authCheckVO.getParams());
+            }
+        }
+        return true;
     }
 }

@@ -6,7 +6,7 @@ import white.goo.serivce.IHandler;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class CompositeValidatorsHandler implements IHandler {
+public class CompositeValidatorsHandler implements IHandler<Map<String,Object>> {
     private final Operator opt;
 
     private final LinkedList<IHandler> chain;
