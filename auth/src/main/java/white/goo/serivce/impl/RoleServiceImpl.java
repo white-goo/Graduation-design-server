@@ -4,9 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import white.goo.constant.RedisKey;
 import white.goo.dto.Query;
 import white.goo.entity.Auth;
 import white.goo.entity.Role;
@@ -18,8 +21,10 @@ import white.goo.serivce.UserService;
 import white.goo.util.DBUtil;
 import white.goo.vo.RoleVO;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +32,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Autowired
     private UserService userService;
+
     @Autowired
-    private AuthService authService;
+    private RedissonClient redissonClient;
 
     @Override
     public List<RoleVO> listVO(Query<Role> page) {
@@ -49,12 +55,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         role.setUserId(roleVO.getUserId().toString());
         save(role);
         roleVO.getUserId().forEach(item->{
-            List<String> collect = authService.listByIds(roleVO.getAuthId()).stream().map(Auth::getAuthName).collect(Collectors.toList());
             User user = userService.getById(item);
-            List<String> list = JSON.parseArray(user.getPermission(), String.class);
-            list.addAll(collect);
-            collect = list.stream().distinct().collect(Collectors.toList());
-            user.setPermission(JSON.toJSONString(collect));
+            List<String> list = JSON.parseArray(user.getRoleIds(), String.class);
+            if(Objects.isNull(list)){
+                list = new ArrayList<>(10);
+            }
+            list.add(role.getId());
+            user.setRoleIds(JSON.toJSONString(list));
             userService.updateById(user);
         });
     }
@@ -69,6 +76,36 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         roleVO.setAuthId(authId);
         roleVO.setUserId(userId);
         return roleVO;
+    }
+
+    @Override
+    @Transactional
+    public void update(RoleVO roleVO) {
+        Role role = getById(roleVO.getId());
+        List<String> oldUserIds = JSON.parseArray(role.getUserId(), String.class);
+        List<String> newUserIds = roleVO.getUserId();
+        oldUserIds.stream().filter(item->!newUserIds.contains(item)).forEach(item->{
+            User user = userService.getById(item);
+            List<String> list = JSON.parseArray(user.getRoleIds(), String.class);
+            list.remove(role.getId());
+            user.setRoleIds(JSON.toJSONString(list));
+            userService.updateById(user);
+            RBucket<Object> bucket = redissonClient.getBucket(RedisKey.User.getValue() + user.getId());
+            bucket.getAndDelete();
+        });
+        newUserIds.stream().filter(item->!oldUserIds.contains(item)).forEach(item->{
+            User user = userService.getById(item);
+            List<String> list = JSON.parseArray(user.getRoleIds(), String.class);
+            list.add(role.getId());
+            user.setRoleIds(JSON.toJSONString(list));
+            userService.updateById(user);
+            RBucket<Object> bucket = redissonClient.getBucket(RedisKey.User.getValue() + user.getId());
+            bucket.getAndDelete();
+        });
+        role.setUserId(JSON.toJSONString(newUserIds));
+        role.setRoleName(roleVO.getRoleName());
+        role.setAuthId(JSON.toJSONString(roleVO.getAuthId()));
+        this.updateById(role);
     }
 
 }

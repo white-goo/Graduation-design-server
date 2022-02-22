@@ -3,7 +3,7 @@ package white.goo.constant;
 import white.goo.annonation.Permission;
 import white.goo.annonation.RoleAuth;
 
-@RoleAuth
+@RoleAuth("auth")
 public class AuthRoleConstant {
 
     @Permission("权限管理员")

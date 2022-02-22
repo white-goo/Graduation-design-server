@@ -13,4 +13,6 @@ public interface RoleService extends IService<Role> {
     void save(RoleVO roleVO);
 
     RoleVO load(String id);
+
+    void update(RoleVO roleVO);
 }

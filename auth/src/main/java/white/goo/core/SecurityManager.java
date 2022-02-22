@@ -15,6 +15,7 @@ import white.goo.serivce.IHandler;
 import white.goo.serivce.IValidator;
 import white.goo.util.SpringUtil;
 import white.goo.util.UserUtil;
+import white.goo.vo.UserVO;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class SecurityManager {
             boolean b = jwt.doValidate(null, null, null);
             if(b){
                 //判断是系统内置用户超管用户,直接放行,判断机制待完善
-                User currentUser = UserUtil.getCurrentUser();
+                UserVO currentUser = UserUtil.getCurrentUser();
                 if ("1".equals(currentUser.getId())) {
                     return true;
                 }

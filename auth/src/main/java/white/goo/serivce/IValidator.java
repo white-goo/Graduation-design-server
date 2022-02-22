@@ -1,6 +1,5 @@
 package white.goo.serivce;
 
-import com.alibaba.fastjson.JSONObject;
 import white.goo.constant.ValidateContext;
 
 import java.util.List;

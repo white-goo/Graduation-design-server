@@ -1,5 +1,6 @@
 package white.goo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity {
     private String username;
     private String password;
-    private String permission;
+    @TableField("roleIds")
+    private String roleIds;
 }

@@ -5,6 +5,7 @@
         <id column="id" property="id"/>
         <result column="auth_name" property="authName"/>
         <result column="auth_show_name" property="authShowName"/>
+        <result column="module_name" property="moduleName"/>
         <result column="create_time" property="createTime"/>
         <result column="edit_time" property="editTime"/>
         <result column="creator" property="creator"/>

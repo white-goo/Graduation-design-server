@@ -1,6 +1,5 @@
 package white.goo.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +51,12 @@ public class RoleController {
     @PostMapping("delete")
     public R delete(@RequestBody IdVO idVO){
         roleService.removeById(idVO.getId());
+        return R.ok();
+    }
+
+    @PostMapping("update")
+    public R update(@RequestBody RoleVO roleVO){
+        roleService.update(roleVO);
         return R.ok();
     }
 }

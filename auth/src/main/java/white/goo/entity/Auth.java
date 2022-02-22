@@ -9,5 +9,6 @@ public class Auth extends BaseEntity {
 
     private String authName;
     private String authShowName;
+    private String moduleName;
 
 }

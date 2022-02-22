@@ -12,6 +12,7 @@ public class UserVO extends BaseVO {
 
     private String username;
     private String password;
-    private List<String> permission;
+    private List<String> roleIds;
+    private String permission;
 
 }
