@@ -11,12 +11,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>auth</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>white.goo</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    <modules>
+        <module>auth-api</module>
+        <module>auth-core</module>
+        <module>auth-client</module>
+        <module>auth-starter</module>
+        <module>auth-support</module>
+    </modules>
 </project>
