@@ -32,7 +32,13 @@ public class InitPermission implements ApplicationRunner {
     public void run(ApplicationArguments args){
 
         Map<String, Object> beansWithAnnotation = SpringUtil.getApplicationContext().getBeansWithAnnotation(RoleAuth.class);
-        R r = authClient.listByModuleName(moduleName);
+        R r = null;
+        while (Objects.isNull(r)){
+            try {
+                r = authClient.listByModuleName(moduleName);
+            } catch (Exception ignored) {
+            }
+        }
         List<Auth> oldAuths = r.getData(new TypeReference<List<Auth>>(){});
         List<String> newAuths = new ArrayList<>();
         beansWithAnnotation.forEach((k, v) -> {

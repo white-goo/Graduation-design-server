@@ -12,5 +12,6 @@ public class AuthCheckVO {
     private String key;
     private Map<String, Object> params;
     private String path;
+    private String module;
 
 }

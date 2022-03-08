@@ -17,4 +17,9 @@ public class UserUtil {
         return (UserVO) cacheUtil.get(RedisKey.User.getValue() + userId);
     }
 
+    public static void update(UserVO userVO){
+        CacheUtil cacheUtil = SpringUtil.getBean(CacheUtil.class);
+        cacheUtil.update(RedisKey.User.getValue() + userVO.getId(), userVO);
+    }
+
 }

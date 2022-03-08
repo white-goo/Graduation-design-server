@@ -23,4 +23,8 @@ public interface CourseService extends IService<Course> {
     int deleteBatch(List<IdVO> idVOList);
 
     boolean chooseCourse(IdVO idVO);
+
+    List<CourseVO> listMyCourse(Query<Course> page);
+
+    void deleteMyCourse(IdVO idVO);
 }

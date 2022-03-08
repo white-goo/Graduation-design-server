@@ -103,4 +103,22 @@ public class CourseController {
         boolean b = courseService.chooseCourse(idVO);
         return R.ok().saveData(b);
     }
+
+    @PostMapping("listMyCourse")
+    @AuthValidator(value = "roleValidator", param = {
+            @ValidateParam(CourseRole.COURSE_STUDENT)
+    })
+    public R listMyCourse(@RequestBody Query<Course> page){
+        List<CourseVO> res = courseService.listMyCourse(page);
+        return R.ok().saveData(res);
+    }
+
+    @PostMapping("deleteMyCourse")
+    @AuthValidator(value = "roleValidator", param = {
+            @ValidateParam(CourseRole.COURSE_STUDENT)
+    })
+    public R deleteMyCourse(@RequestBody IdVO idVO){
+        courseService.deleteMyCourse(idVO);
+        return R.ok();
+    }
 }

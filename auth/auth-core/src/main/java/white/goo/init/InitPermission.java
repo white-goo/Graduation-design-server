@@ -1,6 +1,8 @@
 package white.goo.init;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.redisson.api.RList;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import white.goo.annonation.Permission;
 import white.goo.annonation.RoleAuth;
 import white.goo.api.AuthService;
+import white.goo.constant.RedisKey;
 import white.goo.entity.Auth;
 import white.goo.util.SpringUtil;
 
@@ -24,6 +27,9 @@ public class InitPermission implements ApplicationRunner {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Value("${spring.application.name}")
     private String moduleName;

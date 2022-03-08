@@ -22,4 +22,6 @@ public interface UserClient {
     @PostMapping("addCourse")
     R addCourse(@RequestBody UserVO userVO);
 
+    @PostMapping("updateCourse")
+    void updateCourse(@RequestBody UserVO userVO);
 }

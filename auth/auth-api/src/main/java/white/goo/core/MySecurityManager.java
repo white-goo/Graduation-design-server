@@ -151,6 +151,6 @@ public class MySecurityManager {
                 return iHandler.doValidate(authCheckVO.getParams());
             }
         }
-        return true;
+        return false;
     }
 }

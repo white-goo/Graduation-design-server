@@ -4,7 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RLock;
@@ -33,6 +35,7 @@ import white.goo.vo.CourseVO;
 import white.goo.vo.UserVO;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,12 +65,14 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                 return conditions.get("course_name").equals(item.getCourseName());
             }
             return true;
-        }).peek(item->{
+        }).peek(item -> {
             UserVO currentUser = UserUtil.getCurrentUser();
             List<String> list = JSON.parseArray(currentUser.getPermission(), String.class);
             List<String> courses = currentUser.getCourses();
-            if(CollectionUtil.isNotEmpty(list)){
-                item.setIsChoose((Objects.isNull(courses) || !courses.contains(item.getId())) && list.contains(CourseRole.COURSE_STUDENT));
+            if (CollectionUtil.isNotEmpty(list)) {
+                item.setIsChoose((Objects.isNull(courses) || !courses.contains(item.getId()))
+                        && list.contains(CourseRole.COURSE_STUDENT)
+                        && redissonClient.getAtomicLong(CourseKeys.COURSE_AMOUNT + item.getId()).get() > 0);
             }
         }).sorted(Comparator.comparing(BaseVO::getId))
                 .skip((page.getCurrent() - 1) * page.getSize())
@@ -75,7 +80,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     private List<CourseVO> refreshCache(Query<Course> page, RMap<String, CourseVO> map) {
-        RLock courseListLock = redissonClient.getRedLock(redissonClient.getLock("CourseListLock"));
+        RLock courseListLock = redissonClient.getLock("CourseListLock");
         if (courseListLock.tryLock()) {
             List<Course> list = list();
             List<CourseVO> collect = list.stream().map(item -> {
@@ -162,28 +167,84 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         long andDecrement = atomicLong.getAndDecrement();
         if (andDecrement > 0) {
             UserVO currentUser = UserUtil.getCurrentUser();
-            if(CollectionUtil.isEmpty(currentUser.getCourses())){
+            if (CollectionUtil.isEmpty(currentUser.getCourses())) {
                 currentUser.setCourses(new ArrayList<>(10));
             }
             currentUser.getCourses().add(idVO.getId());
             userClient.addCourse(currentUser);
+
+            RLock lock = redissonClient.getLock(CourseKeys.COURSE_CHOOSE + idVO.getId());
+            lock.lock(1, TimeUnit.MINUTES);;
             Course byId = getById(idVO.getId());
             List<String> list = JSON.parseArray(byId.getStudents(), String.class);
-            if(Objects.isNull(list)){
+            if (Objects.isNull(list)) {
                 list = new ArrayList<>(10);
             }
             list.add(idVO.getId());
             byId.setStudents(JSON.toJSONString(list));
             super.updateById(byId);
+            lock.unlock();
+
             return true;
-        }else if(andDecrement == 0){
-            atomicLong.delete();
-            RMap<String, CourseVO> map = redissonClient.getMap(CourseKeys.COURSE);
-            CourseVO courseVO = map.get(idVO.getId());
-            courseVO.setStatus(CourseStatusEnum.FULL);
-            map.put(idVO.getId(), courseVO);
-            update(courseVO);
+        } else if (andDecrement == 0) {
+            RLock lock = redissonClient.getLock(CourseKeys.MY_COURSE_DELETE + idVO.getId());
+            lock.lock(1, TimeUnit.MINUTES);
+            long l = atomicLong.get();
+            if(l == 0){
+                atomicLong.delete();
+                RMap<String, CourseVO> map = redissonClient.getMap(CourseKeys.COURSE);
+                CourseVO courseVO = map.get(idVO.getId());
+                courseVO.setStatus(CourseStatusEnum.FULL);
+                map.put(idVO.getId(), courseVO);
+                update(courseVO);
+            }
+            lock.unlock();
         }
         return false;
+    }
+
+    @Override
+    public List<CourseVO> listMyCourse(Query<Course> page) {
+        UserVO currentUser = UserUtil.getCurrentUser();
+        List<String> courses = currentUser.getCourses();
+        if (CollectionUtil.isNotEmpty(courses)) {
+            LambdaQueryWrapper<Course> wrapper = Wrappers.<Course>lambdaQuery().in(Course::getId, courses);
+            if(CollectionUtil.isNotEmpty(page.getConditions())){
+                wrapper.eq(Course::getCourseName, page.getConditions().get("course_name"));
+            }
+            Query<Course> list = page(page, wrapper);
+            return list.getRecords().stream().map(item -> {
+                CourseVO courseVO = new CourseVO();
+                BeanUtil.copyProperties(item, courseVO);
+                String teacherId = item.getTeacherId();
+                Teacher byId = teacherService.getById(teacherId);
+                courseVO.setTeacher(byId);
+                return courseVO;
+            }).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteMyCourse(IdVO idVO) {
+        UserVO currentUser = UserUtil.getCurrentUser();
+        List<String> courses = currentUser.getCourses();
+        courses.remove(idVO.getId());
+        userClient.updateCourse(currentUser);
+        UserUtil.update(currentUser);
+        Course byId = getById(idVO.getId());
+        List<String> list = JSON.parseArray(byId.getStudents(), String.class);
+        list.remove(currentUser.getId());
+        byId.setStudents(JSON.toJSONString(list));
+        updateById(byId);
+        RAtomicLong atomicLong = redissonClient.getAtomicLong(CourseKeys.COURSE_AMOUNT + idVO.getId());
+        RLock lock = redissonClient.getLock(CourseKeys.MY_COURSE_DELETE + idVO.getId());
+        lock.lock(1, TimeUnit.MINUTES);
+        long l = atomicLong.incrementAndGet();
+        if(l <= 0){
+            atomicLong.set(byId.getCourseAmount() - list.size());
+        }
+        lock.unlock();
     }
 }

@@ -15,15 +15,7 @@ public enum RedisKey {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     public String getMsg() {
         return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 }

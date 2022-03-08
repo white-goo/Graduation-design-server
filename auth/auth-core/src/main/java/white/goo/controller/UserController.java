@@ -93,6 +93,8 @@ public class UserController {
             userVO.setPermission(JSON.toJSONString(collect));
         }
         userVO.setPassword(null);
+        List<String> list = JSON.parseArray(user.getCourses(), String.class);
+        userVO.setCourses(list);
         cacheUtil.set(RedisKey.User.getValue() + user.getId(), userVO);
         map.put("token", JwtUtil.sign(user.getId(), userVO.getPermission()));
         return R.ok().put("data", map);
@@ -201,6 +203,11 @@ public class UserController {
     @PostMapping("insert")
     public boolean insert(@RequestBody User entity) {
         return userService.save(entity);
+    }
+
+    @PostMapping("updateCourse")
+    public void updateCourse(@RequestBody UserVO userVO){
+        userService.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userVO.getId()).set(User::getCourses, JSON.toJSONString(userVO.getCourses())));
     }
 
 }

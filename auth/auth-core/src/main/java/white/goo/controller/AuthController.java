@@ -1,26 +1,16 @@
 package white.goo.controller;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import white.goo.annonation.AnonValidate;
 import white.goo.annonation.AuthValidator;
 import white.goo.annonation.AuthValidators;
 import white.goo.annonation.ValidateParam;
 import white.goo.constant.AuthRoleConstant;
 import white.goo.constant.Operator;
-import white.goo.core.MySecurityManager;
 import white.goo.dto.R;
 import white.goo.api.AuthService;
 import white.goo.entity.Auth;
-import white.goo.util.SecurityUtil;
-import white.goo.vo.AuthCheckVO;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -43,13 +33,6 @@ public class AuthController {
     })
     public R list(){
         return R.ok().saveData(authService.list());
-    }
-
-    @PostMapping("/authCheck")
-    public R authCheck(@RequestBody List<AuthCheckVO> list){
-        MySecurityManager securityManager = SecurityUtil.getSecurityManager();
-        Map<String, Boolean> collect = list.stream().collect(Collectors.toMap(AuthCheckVO::getKey, securityManager::authCheck));
-        return R.ok().saveData(collect);
     }
 
     @PostMapping("remove")
