@@ -150,7 +150,8 @@ public class MySecurityManager {
             if (Objects.nonNull(iHandler)) {
                 return iHandler.doValidate(authCheckVO.getParams());
             }
+            return false;
         }
-        return false;
+        return true;
     }
 }

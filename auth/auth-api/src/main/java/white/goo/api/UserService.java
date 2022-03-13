@@ -15,7 +15,6 @@ public interface UserService extends IService<User> {
     @PostMapping("listVO")
     List<UserVO> listVO(@RequestBody Query<User> page);
 
-    @AuthValidator(value = "userUpdateValidator")
     @PostMapping("addCourse")
     void addCourse(@RequestBody UserVO userVO);
 }
