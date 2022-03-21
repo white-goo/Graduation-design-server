@@ -10,6 +10,8 @@ import white.goo.api.IValidator;
 import white.goo.config.RepeatedlyReadRequestWrapper;
 import white.goo.constant.Operator;
 import white.goo.constant.ValidateContext;
+import white.goo.filter.BackGroundJwtValidator;
+import white.goo.filter.JwtValidator;
 import white.goo.handler.CompositeValidatorsHandler;
 import white.goo.handler.ValidatorsHandler;
 import white.goo.util.SpringUtil;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class MySecurityManager {
 
-    private final Map<String, IHandler<?>> handlerMap;
+    private final Map<String, IHandler> handlerMap;
 
     private final List<String> nonValidateURI;
 
@@ -38,24 +40,28 @@ public class MySecurityManager {
     public boolean doValidate(RepeatedlyReadRequestWrapper requestWrapper, ServletResponse response) {
 
         HttpServletRequest request = (HttpServletRequest) requestWrapper.getRequest();
-        BufferedReader reader = requestWrapper.getReader();
 
-        HashMap<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("request", requestWrapper);
         map.put("response", response);
 
-        IValidator backGroundJwtValidator = (IValidator) SpringUtil.getBean("backGroundJwtValidator");
+        IValidator<Map<String, Object>> backGroundJwtValidator = (BackGroundJwtValidator) SpringUtil.getBean("backGroundJwtValidator");
         if(backGroundJwtValidator.doValidate(null, map, null)){
             return true;
         }
 
         String requestURI = request.getRequestURI();
-        String collect = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        Object parse = JSON.parse(collect);
+        String collect = null;
+        String method = request.getMethod();
+        String contentType = request.getContentType();
+        if ("POST".equals(method) && "application/json;charset=UTF-8".equals(contentType)) {
+            BufferedReader reader = requestWrapper.getReader();
+            collect = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        }
 
         boolean contains = nonValidateURI.contains(requestURI);
         if (!contains) {
-            IValidator jwt = (IValidator) SpringUtil.getBean("jwt");
+            IValidator<Map<String, Object>> jwt = (JwtValidator) SpringUtil.getBean("jwt");
             if (!jwt.doValidate(null, map, null)) {
                 return false;
             }
@@ -66,7 +72,7 @@ public class MySecurityManager {
             }
             IHandler iHandler = handlerMap.get(requestURI);
             if (Objects.nonNull(iHandler)) {
-                return iHandler.doValidate(parse);
+                return iHandler.doValidate(collect);
             }
         }
         return true;
@@ -86,7 +92,9 @@ public class MySecurityManager {
             } else {
                 CompositeValidators compositeValidators = v.getMethod().getAnnotation(CompositeValidators.class);
                 if (Objects.nonNull(compositeValidators)) {
-                    CompositeValidatorsHandler compositeValidatorsHandler = CompositeValidatorsHandler.build(compositeValidators.opt());
+                    ValidateContext validateContext = new ValidateContext(compositeValidators.opt());
+                    validateContext.setSecurityManager(this);
+                    CompositeValidatorsHandler compositeValidatorsHandler = CompositeValidatorsHandler.build(validateContext);
                     for (AuthValidators authValidators : compositeValidators.value()) {
                         ValidatorsHandler handler = parseAuthValidators(authValidators);
                         compositeValidatorsHandler.addHandler(handler);
@@ -126,7 +134,7 @@ public class MySecurityManager {
 
     private void parseAuthValidator(ValidatorsHandler handler, AuthValidator authValidator) {
         String id = authValidator.value();
-        IValidator iValidator = (IValidator) SpringUtil.getBean(id);
+        IValidator<?> iValidator = SpringUtil.getApplicationContext().getBeansOfType(IValidator.class).get(id);
         handler.addValidator(iValidator);
         HashMap<String, List<String[]>> paramMap = new HashMap<>();
         ValidateParam[] param = authValidator.param();
@@ -148,7 +156,7 @@ public class MySecurityManager {
             }
             IHandler iHandler = handlerMap.get(path);
             if (Objects.nonNull(iHandler)) {
-                return iHandler.doValidate(authCheckVO.getParams());
+                return iHandler.doValidate(JSON.toJSONString(authCheckVO.getParams()));
             }
             return false;
         }

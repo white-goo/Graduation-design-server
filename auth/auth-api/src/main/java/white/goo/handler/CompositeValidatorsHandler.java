@@ -1,28 +1,24 @@
 package white.goo.handler;
 
+import white.goo.api.AbstractHandler;
 import white.goo.api.IHandler;
 import white.goo.constant.Operator;
+import white.goo.constant.ValidateContext;
 
-import java.util.LinkedList;
-import java.util.Map;
+public class CompositeValidatorsHandler extends AbstractHandler<IHandler> {
 
-public class CompositeValidatorsHandler implements IHandler<Map<String,Object>> {
-    private final Operator opt;
-
-    private final LinkedList<IHandler> chain;
-
-    private CompositeValidatorsHandler(Operator opt) {
-        this.opt = opt;
-        this.chain = new LinkedList<>();
+    private CompositeValidatorsHandler(ValidateContext context) {
+        super(context);
     }
 
-    public static CompositeValidatorsHandler build(Operator opt) {
-        return new CompositeValidatorsHandler(opt);
+    public static CompositeValidatorsHandler build(ValidateContext context) {
+        return new CompositeValidatorsHandler(context);
     }
 
     @Override
-    public boolean doValidate(Map<String, Object> requestParameter) {
-        for (IHandler handler : chain) {
+    public boolean doValidate(String requestParameter) {
+        Operator opt = getContext().getOpt();
+        for (IHandler handler : getChain()) {
             boolean b = handler.doValidate(requestParameter);
             if (Operator.AND == opt && !b) {
                 return false;
@@ -34,7 +30,7 @@ public class CompositeValidatorsHandler implements IHandler<Map<String,Object>> 
     }
 
     public CompositeValidatorsHandler addHandler(IHandler handler){
-        chain.add(handler);
+        getChain().add(handler);
         return this;
     }
 }

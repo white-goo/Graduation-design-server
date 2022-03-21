@@ -3,6 +3,7 @@ package white.goo.filter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import white.goo.annonation.ValidatorDefine;
+import white.goo.api.AbstractValidator;
 import white.goo.api.IValidator;
 import white.goo.constant.ValidateContext;
 import white.goo.util.JwtUtil;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @ValidatorDefine("jwt")
-public class JwtValidator implements IValidator<Map<String, Object>> {
+public class JwtValidator extends AbstractValidator<Map<String, Object>> {
 
     @Override
     public boolean doValidate(ValidateContext ctx, Map<String,Object> requestParam, Map<String, List<String[]>> param) {

@@ -1,6 +1,6 @@
 package white.goo.api;
 
 
-public interface IHandler<T> {
-    boolean doValidate(T requestParameter);
+public interface IHandler {
+    boolean doValidate(String requestParameter);
 }
