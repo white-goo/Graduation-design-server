@@ -16,6 +16,6 @@ public @interface AuthValidators {
 
     Operator opt() default Operator.AND;
 
-    AuthValidator[] value() default {};
+    AuthValidator[] value();
 
 }

@@ -99,6 +99,12 @@ public class CourseController {
     @AuthValidator(value = "roleValidator", param = {
             @ValidateParam(CourseRole.COURSE_STUDENT)
     })
+    @AuthValidators({
+            @AuthValidator(value = "roleValidator", param = {
+                    @ValidateParam(CourseRole.COURSE_STUDENT)
+            }),
+            @AuthValidator(value = "isChooseValidator")
+    })
     public R chooseCourse(@RequestBody IdVO idVO){
         boolean b = courseService.chooseCourse(idVO);
         return R.ok().saveData(b);

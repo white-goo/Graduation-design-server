@@ -54,7 +54,7 @@ public class MySecurityManager {
         String collect = null;
         String method = request.getMethod();
         String contentType = request.getContentType();
-        if ("POST".equals(method) && "application/json;charset=UTF-8".equals(contentType)) {
+        if ("POST".equals(method) && Objects.nonNull(contentType) && contentType.contains("application/json")) {
             BufferedReader reader = requestWrapper.getReader();
             collect = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }

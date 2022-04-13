@@ -163,8 +163,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     @Override
     public boolean chooseCourse(IdVO idVO) {
-        RAtomicLong atomicLong = redissonClient.getAtomicLong(CourseKeys.COURSE_AMOUNT + idVO.getId());
-        long andDecrement = atomicLong.getAndDecrement();
+        RAtomicLong courseCount = redissonClient.getAtomicLong(CourseKeys.COURSE_AMOUNT + idVO.getId());
+        long andDecrement = courseCount.getAndDecrement();
         if (andDecrement > 0) {
             UserVO currentUser = UserUtil.getCurrentUser();
             if (CollectionUtil.isEmpty(currentUser.getCourses())) {
@@ -189,9 +189,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         } else if (andDecrement == 0) {
             RLock lock = redissonClient.getLock(CourseKeys.MY_COURSE_DELETE + idVO.getId());
             lock.lock(1, TimeUnit.MINUTES);
-            long l = atomicLong.get();
+            long l = courseCount.get();
             if(l == 0){
-                atomicLong.delete();
+                courseCount.delete();
                 RMap<String, CourseVO> map = redissonClient.getMap(CourseKeys.COURSE);
                 CourseVO courseVO = map.get(idVO.getId());
                 courseVO.setStatus(CourseStatusEnum.FULL);

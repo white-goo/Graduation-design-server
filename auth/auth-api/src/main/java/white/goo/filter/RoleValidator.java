@@ -12,6 +12,7 @@ import white.goo.util.ThreadLocalUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @ValidatorDefine("roleValidator")
@@ -25,6 +26,9 @@ public class RoleValidator extends AbstractValidator<Map<String, Object>> {
         String token = ThreadLocalUtil.get();
         JSONArray objects = JSON.parseArray(JwtUtil.getPermission(token));
         AtomicBoolean b = new AtomicBoolean(true);
+        if(Objects.isNull(objects)){
+            return false;
+        }
         permissions.stream().map(item->item[0]).forEach(item->{
             if(!objects.contains(item)){
                 b.set(false);
