@@ -96,9 +96,6 @@ public class CourseController {
     }
 
     @PostMapping("chooseCourse")
-    @AuthValidator(value = "roleValidator", param = {
-            @ValidateParam(CourseRole.COURSE_STUDENT)
-    })
     @AuthValidators({
             @AuthValidator(value = "roleValidator", param = {
                     @ValidateParam(CourseRole.COURSE_STUDENT)
