@@ -15,6 +15,10 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import white.goo.api.Test2Api;
+import white.goo.api.TestApi;
 import white.goo.client.UserClient;
 import white.goo.constant.CourseKeys;
 import white.goo.constant.CourseRole;
@@ -26,6 +30,8 @@ import white.goo.dto.R;
 import white.goo.entity.Auth;
 import white.goo.entity.Course;
 import white.goo.entity.Teacher;
+import white.goo.extension.Test2Point;
+import white.goo.extension.TestPoint;
 import white.goo.repository.CourseMapper;
 import white.goo.service.CourseService;
 import white.goo.service.TeacherService;
@@ -39,7 +45,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> implements CourseService {
+@RestController
+@RequestMapping("api")
+@TestPoint(code = "123")
+@Test2Point(code = "456")
+public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> implements CourseService, TestApi, Test2Api {
 
     @Autowired
     private TeacherService teacherService;
@@ -246,5 +256,23 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             atomicLong.set(byId.getCourseAmount() - list.size());
         }
         lock.unlock();
+    }
+
+    @Override
+    public List<String> test(IdVO idVO) {
+        List<String> list = new ArrayList<>();
+        list.add(idVO.getId());
+        return list;
+    }
+
+    @Override
+    public String test3() {
+        return "123456";
+    }
+
+
+    @Override
+    public String test22() {
+        return "test22";
     }
 }

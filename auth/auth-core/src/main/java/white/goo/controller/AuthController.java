@@ -3,15 +3,21 @@ package white.goo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import white.goo.annonation.AuthValidator;
-import white.goo.annonation.AuthValidators;
-import white.goo.annonation.CompositeValidators;
-import white.goo.annonation.ValidateParam;
+import white.goo.annonation.*;
+import white.goo.api.Extension;
+import white.goo.api.Test2Api;
+import white.goo.api.TestApi;
 import white.goo.constant.AuthRoleConstant;
 import white.goo.constant.Operator;
+import white.goo.dto.IdVO;
 import white.goo.dto.R;
 import white.goo.api.AuthService;
 import white.goo.entity.Auth;
+import white.goo.extension.Test2Point;
+import white.goo.extension.TestPoint;
+import white.goo.util.ExtendUtil;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -63,6 +69,26 @@ public class AuthController {
     @PostMapping("getByAuthName")
     public Auth getByAuthName(@RequestBody String name){
         return authService.getOne(new QueryWrapper<Auth>().eq("auth_name", name));
+    }
+
+    @PostMapping("test")
+    @AnonValidate
+    public void Test(){
+
+        List<Extension> point = ExtendUtil.getPoint(TestPoint.class);
+        for (Extension extension : point) {
+            TestApi testApi = extension.getProvider();
+            List<String> test = testApi.test(IdVO.of("123"));
+            String s1 = testApi.test3();
+            System.out.println();
+        }
+
+        List<Extension> point1 = ExtendUtil.getPoint(Test2Point.class);
+        for (Extension extension : point1) {
+            Test2Api test2Api = extension.getProvider();
+            String test = test2Api.test22();
+            System.out.println();
+        }
     }
 
 }
